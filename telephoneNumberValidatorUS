@@ -15,6 +15,41 @@
 
 function telephoneCheck(str) {
     const regex = new RegExp(/^(1?)(?:((\s?\(\d{3}\)\s?|\s?\d{3}\s?)\-?\d{3}\s?\-?\d{4}$))/gm)
+    /**
+     * /
+* ^(1)(?:((\s\(\d\)\s|\s\d\s)\-\d\s\-\d$))
+* /
+* gm
+* ^ asserts position at start of a line
+* 1st Capturing Group (1)
+* 1 matches the character 1 literally (case sensitive)
+* ? matches the previous token between zero and one times, as many times as possible, giving back as needed (greedy)
+* Non-capturing group (?:((\s\(\d\)\s|\s\d\s)\-\d\s\-\d$))
+* 2nd Capturing Group ((\s\(\d\)\s|\s\d\s)\-\d\s\-\d$)
+* 3rd Capturing Group (\s\(\d\)\s|\s\d\s)
+* 1st Alternative \s\(\d\)\s
+* \s matches any whitespace character (equivalent to [\r\n\t\f\v ])
+* ? matches the previous token between zero and one times, as many times as possible, giving back as needed (greedy)
+* \( matches the character ( literally (case sensitive)
+* \d matches a digit (equivalent to [0-9])
+* \) matches the character ) literally (case sensitive)
+* \s matches any whitespace character (equivalent to [\r\n\t\f\v ])
+* 2nd Alternative \s\d\s
+* \s matches any whitespace character (equivalent to [\r\n\t\f\v ])
+* \d matches a digit (equivalent to [0-9])
+* \s matches any whitespace character (equivalent to [\r\n\t\f\v ])
+* \- matches the character - literally (case sensitive)
+* ? matches the previous token between zero and one times, as many times as possible, giving back as needed (greedy)
+* \d matches a digit (equivalent to [0-9])
+* {3} matches the previous token exactly 3 times
+* \s matches any whitespace character (equivalent to [\r\n\t\f\v ])
+* \- matches the character - literally (case sensitive)
+* \d matches a digit (equivalent to [0-9])
+* $ asserts position at the end of a line
+* Global pattern flags
+* g modifier: global. All matches (don't return after first match)
+* m modifier: multi line. Causes ^ and $ to match the begin/end of each line (not only begin/end of string)
+     */
     return regex.test(str)
   
   }
