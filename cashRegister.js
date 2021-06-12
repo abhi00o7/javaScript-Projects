@@ -27,7 +27,8 @@ One-hundred Dollars	$100 (ONE HUNDRED)
  * @param cid 
  * 
  */
-function checkCashRegister(price, cash, cid) {
+function checkCashRegister(price, cash, cid)
+{
     let change = cash - price
     let changeX100 = change * 100
     let reqChangeArr = []
@@ -54,80 +55,100 @@ function checkCashRegister(price, cash, cid) {
     // total individual bills available in the register 
     let billsAvailObj = cid
         .reverse()
-        .reduce((acc, item, index) => {
+        .reduce((acc, item, index) =>
+        {
             let [key, value] = item
             acc[key] = Math.round(value / dollarChange[index])
             return acc
-        }, {})
+        },
+        {})
 
     // check for cash availability 
-    if (cashAvail < change) {
+    if (cashAvail < change)
+    {
         status.status = "INSUFFICIENT_FUNDS"
     }
     // for the time when there is enough cash in the register
-    else if (cashAvail > change) {
-        for (let index = 0; index < cid.length; index++) {
+    else if (cashAvail > change)
+    {
+        for (let index = 0; index < cid.length; index++)
+        {
             let billsReq = (Math.floor(changeX100 / dollarChangeX100[index]))
 
-
-            if (billsReq == Object.values(billsAvailObj)[index]) {
+            if (billsReq == Object.values(billsAvailObj)[index])
+            {
                 reqChangeArr.push(billsReq)
                 changeX100 = changeX100 % dollarChangeX100[index]
 
-            } else if (billsReq > Object.values(billsAvailObj)[index]) {
+            }
+            else if (billsReq > Object.values(billsAvailObj)[index])
+            {
                 reqChangeArr.push(Object.values(billsAvailObj)[index])
                 changeX100 = ((billsReq - Object.values(billsAvailObj)[index]) * dollarChangeX100[index]) +
                     (changeX100 % dollarChangeX100[index])
 
-
-            } else if (billsReq < Object.values(billsAvailObj)[index]) {
+            }
+            else if (billsReq < Object.values(billsAvailObj)[index])
+            {
                 reqChangeArr.push(billsReq)
                 changeX100 = Math.round((changeX100 % dollarChangeX100[index]) * 100) / 100
 
-            } else if (billsReq == 0) {
+            }
+            else if (billsReq == 0)
+            {
                 reqChangeArr.push(0)
             }
         }
 
-        if (changeX100 != 0) {
+        if (changeX100 != 0)
+        {
             status.status = "INSUFFICIENT_FUNDS"
-        } else {
+        }
+        else
+        {
             status.status = "OPEN"
         }
-    } else if (cashAvail === change) {
+    }
+    else if (cashAvail === change)
+    {
         status.status = "CLOSED"
     }
-
 
     reqChangeArr = reqChangeArr.map((item, index) => item * dollarChange[index])
 
     let reqChangeObj = Object.keys(billsAvailObj)
-        .reduce((acc, key, index) => {
+        .reduce((acc, key, index) =>
+        {
             acc[key] = reqChangeArr[index]
             return acc
-        }, {})
+        },
+        {})
     // removing zeros from the object:
     let reqChangeObjFilter = Object.keys(reqChangeObj)
         .filter(k => reqChangeObj[k] > 0)
-        .reduce(function (obj, key) {
-            if (obj[key] != 0) {
+        .reduce(function (obj, key)
+        {
+            if (obj[key] != 0)
+            {
                 obj[key] = reqChangeObj[key]
             }
             return obj
-        }, {})
+        },
+        {})
 
-    if ((status.status === "OPEN")) {
+    if ((status.status === "OPEN"))
+    {
         status.change = Object.entries(reqChangeObjFilter)
-    } else if (status.status === "CLOSED") {
+    }
+    else if (status.status === "CLOSED")
+    {
         status.change = cid.reverse()
     }
-
 
     return status
 
 }
 // test cases 
-
 
 console.log(checkCashRegister(19.5, 20, [
     ["PENNY", 0.5],
