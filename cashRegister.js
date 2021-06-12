@@ -106,9 +106,7 @@ function checkCashRegister(price, cash, cid) {
             acc[key] = reqChangeArr[index]
             return acc
         }, {})
-    // console.log(reqChangeObj)
     // removing zeros from the object:
-
     let reqChangeObjFilter = Object.keys(reqChangeObj)
         .filter(k => reqChangeObj[k] > 0)
         .reduce(function (obj, key) {
@@ -124,7 +122,6 @@ function checkCashRegister(price, cash, cid) {
         status.change = cid.reverse()
     }
 
-    // (status.status === "OPEN")?status.change = Object.entries(reqChangeObj):(status.status === "CLOSED")?status.change = Object.entries(reqChangeObj): status.change =[];
 
     return status
 
