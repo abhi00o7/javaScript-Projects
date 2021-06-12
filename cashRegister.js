@@ -49,7 +49,7 @@ function checkCashRegister(price, cash, cid) {
         status.status = "INSUFFICIENT_FUNDS"
     }
     // for the time when there is enough cash in the register
-    else if (cashAvail >= change) {
+    else if (cashAvail > change) {
         for (let index = 0; index < cid.length; index++) {
             let billsReq = (Math.floor(changeX100 / dollarChangeX100[index]))
 
@@ -88,7 +88,7 @@ function checkCashRegister(price, cash, cid) {
 
     // removing zeros from the object:
 
-    reqChangeObj = Object.keys(reqChangeObj)
+    let reqChangeObjFilter = Object.keys(reqChangeObj)
         .filter(k => reqChangeObj[k] > 0)
         .reduce(function (obj, key) {
             if (obj[key] != 0) {
@@ -98,18 +98,21 @@ function checkCashRegister(price, cash, cid) {
         }, {})
 
         if ((status.status === "OPEN")) {
-            status.change = Object.entries(reqChangeObj)
+            status.change = Object.entries(reqChangeObjFilter)
         } 
         else if(status.status === "CLOSED") 
         {
-            status.change = Object.entries(reqChangeObj)
+            status.change = cid.reverse()
         }
     
-        // (status.status === "OPEN")?status.change = Object.entries(reqChangeObj):(status.status === "CLOSED")?status.change = Object.entries(reqChangeObj): status.change =[];
+        // (status.status === "OPEN")?status.change = Object.entries(reqChangeObj):(status.status === "CLOSED")?status.change = cid.reverse(): status.change =[];
     
     return status
 
 }
+ // test cases 
+
+
 // console.log(checkCashRegister(19.5, 20, [
 //     ["PENNY", 0.5],
 //     ["NICKEL", 0],
@@ -171,7 +174,6 @@ console.log(checkCashRegister(19.5, 20, [
 ]))
 
  
- // test cases 
 checkCashRegister(19.5, 20, [
     ["PENNY", 1.01],
     ["NICKEL", 2.05],
