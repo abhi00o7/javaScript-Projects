@@ -16,8 +16,8 @@
  * @param cid 
  * 
  */
-
-function checkCashRegister(price, cash, cid) {
+function checkCashRegister(price, cash, cid)
+{
     let change = cash - price
     let changeX100 = change * 100
     let reqChangeArr = []
@@ -32,15 +32,18 @@ function checkCashRegister(price, cash, cid) {
         .reduce((a, b) => Math.round((a + b) * 100) / 100, 0)
 
     // total bills available in the register 
-    let billsAvail = cid
+    let billsAvailObj = cid
         .reverse()
-        .reduce((acc, item, index) => {
+        .reduce((acc, item, index) =>
+        {
             let [key, value] = item
             acc[key] = Math.round(value / dollarChange[index])
             return acc
         }, {})
+        cashAvail()
     // if the register is short on cash
-    if (cashAvail < change) {
+    if (cashAvail < change)
+    {
         return {
             status: "INSUFFICIENT_FUNDS",
             change: []
@@ -48,53 +51,67 @@ function checkCashRegister(price, cash, cid) {
     }
     // for the time when there is enough cash in the register
 
-    for (let index = 0; index < cid.length; index++) {
-        let billsReq = (Math.floor(changeX100 / dollarChangeX100[index]))
+    else if (cashAvail > change)
+    {
+        for (let index = 0; index < cid.length; index++)
+        {
+            let billsReq = (Math.floor(changeX100 / dollarChangeX100[index]))
 
-        if (billsReq == Object.values(billsAvail)[index]) {
-            reqChangeArr.push(billsReq)
-            changeX100 = changeX100 % dollarChangeX100[index]
+            if (billsReq == Object.values(billsAvailObj)[index])
+            {
+                reqChangeArr.push(billsReq)
+                changeX100 = changeX100 % dollarChangeX100[index]
 
-        } else if (billsReq > Object.values(billsAvail)[index]) {
-            reqChangeArr.push(Object.values(billsAvail)[index])
+            }
 
-            changeX100 = ((billsReq - Object.values(billsAvail)[index]) * dollarChangeX100[index]) +
-                (changeX100 % dollarChangeX100[index])
+            else if (billsReq > Object.values(billsAvailObj)[index])
+            {
+                reqChangeArr.push(Object.values(billsAvailObj)[index])
 
-        } else if (billsReq < Object.values(billsAvail)[index]) {
-            reqChangeArr.push(billsReq)
-            changeX100 = Math.round((changeX100 % dollarChangeX100[index]) * 100) / 100
+                changeX100 = ((billsReq - Object.values(billsAvailObj)[index]) * dollarChangeX100[index]) +
+                    (changeX100 % dollarChangeX100[index])
 
-        } else if (billsReq == 0) {
-            reqChangeArr.push(0)
+            }
+            else if (billsReq < Object.values(billsAvailObj)[index])
+            {
+                reqChangeArr.push(billsReq)
+                changeX100 = Math.round((changeX100 % dollarChangeX100[index]) * 100) / 100
+
+            }
+            else if (billsReq == 0)
+            {
+                reqChangeArr.push(0)
+            }
+
         }
+    }
+
+    else if(cashAvail === change){
 
     }
     reqChangeArr = reqChangeArr.map((item, index) => item * dollarChange[index])
 
-    let reqChangeObj = Object.keys(billsAvail)
-        .reduce((acc, key, index) => {
+    let reqChangeObj = Object.keys(billsAvailObj)
+        .reduce((acc, key, index) =>
+        {
             acc[key] = reqChangeArr[index]
             return acc
         }, {})
-        
-
-
 
     // removing zeros from the object:
 
     reqChangeObj = Object.keys(reqChangeObj)
-            .filter(k => reqChangeObj[k] > 0)
-            .reduce(function (obj,key){
-            if(obj[key] != 0){
+        .filter(k => reqChangeObj[k] > 0)
+        .reduce(function (obj, key)
+        {
+            if (obj[key] != 0)
+            {
                 obj[key] = reqChangeObj[key]
             }
             return obj
-        },{})
-
+        }, {})
 
     return reqChangeObj
-
 
 }
 
