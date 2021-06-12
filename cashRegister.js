@@ -32,21 +32,26 @@ function checkCashRegister(price, cash, cid) {
     let changeX100 = change * 100
     let reqChangeArr = []
     let status = {
-        status:'',
-        change:[]
+        status: '',
+        change: []
     }
-
+    // the value of change in the dollars for calculating total amount available
     let dollarChange = [.01, .05, .1, .25, 1, 5, 10, 20, 100].reverse()
-    let dollarChangeX100 = [1, 5, 10, 25, 100, 500, 1000, 2000, 10000].reverse()
+    let dollarChangeX100 = [...dollarChange].map(item => item * 100)
 
-    // total cash available in register 
+    // total cash amount available in register 
     let cashAvail = cid
         .reduce((a, b) => a.concat(b))
         .filter(item => typeof (item) === "number")
         .reduce((a, b) => Math.round((a + b) * 100) / 100, 0)
 
+    // total cash available from cash-in=drawer input in an array
+    let cashAvailArr = cid
+        .reduce((a, b) => a.concat(b))
+        .filter(item => typeof (item) === "number")
+        .reverse()
 
-    // total bills available in the register 
+    // total individual bills available in the register 
     let billsAvailObj = cid
         .reverse()
         .reduce((acc, item, index) => {
@@ -54,8 +59,8 @@ function checkCashRegister(price, cash, cid) {
             acc[key] = Math.round(value / dollarChange[index])
             return acc
         }, {})
-    // cashAvail()
-    // if the register is short on cash
+
+    // check for cash availability 
     if (cashAvail < change) {
         status.status = "INSUFFICIENT_FUNDS"
     }
@@ -64,15 +69,16 @@ function checkCashRegister(price, cash, cid) {
         for (let index = 0; index < cid.length; index++) {
             let billsReq = (Math.floor(changeX100 / dollarChangeX100[index]))
 
+
             if (billsReq == Object.values(billsAvailObj)[index]) {
                 reqChangeArr.push(billsReq)
                 changeX100 = changeX100 % dollarChangeX100[index]
 
             } else if (billsReq > Object.values(billsAvailObj)[index]) {
                 reqChangeArr.push(Object.values(billsAvailObj)[index])
-
                 changeX100 = ((billsReq - Object.values(billsAvailObj)[index]) * dollarChangeX100[index]) +
                     (changeX100 % dollarChangeX100[index])
+
 
             } else if (billsReq < Object.values(billsAvailObj)[index]) {
                 reqChangeArr.push(billsReq)
@@ -81,13 +87,17 @@ function checkCashRegister(price, cash, cid) {
             } else if (billsReq == 0) {
                 reqChangeArr.push(0)
             }
+        }
 
+        if (changeX100 != 0) {
+            status.status = "INSUFFICIENT_FUNDS"
+        } else {
+            status.status = "OPEN"
         }
-        status.status = "OPEN"
-    } 
-    else if (cashAvail === change) {
+    } else if (cashAvail === change) {
         status.status = "CLOSED"
-        }
+    }
+
 
     reqChangeArr = reqChangeArr.map((item, index) => item * dollarChange[index])
 
@@ -96,7 +106,7 @@ function checkCashRegister(price, cash, cid) {
             acc[key] = reqChangeArr[index]
             return acc
         }, {})
-
+    // console.log(reqChangeObj)
     // removing zeros from the object:
 
     let reqChangeObjFilter = Object.keys(reqChangeObj)
@@ -108,20 +118,18 @@ function checkCashRegister(price, cash, cid) {
             return obj
         }, {})
 
-        if ((status.status === "OPEN")) {
-            status.change = Object.entries(reqChangeObjFilter)
-        } 
-        else if(status.status === "CLOSED") 
-        {
-            status.change = cid.reverse()
-        }
-    
-        // (status.status === "OPEN")?status.change = Object.entries(reqChangeObj):(status.status === "CLOSED")?status.change = cid.reverse(): status.change =[];
-    
+    if ((status.status === "OPEN")) {
+        status.change = Object.entries(reqChangeObjFilter)
+    } else if (status.status === "CLOSED") {
+        status.change = cid.reverse()
+    }
+
+    // (status.status === "OPEN")?status.change = Object.entries(reqChangeObj):(status.status === "CLOSED")?status.change = Object.entries(reqChangeObj): status.change =[];
+
     return status
 
 }
- // test cases 
+// test cases 
 
 
 console.log(checkCashRegister(19.5, 20, [
