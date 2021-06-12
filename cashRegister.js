@@ -19,20 +19,19 @@
 
 function checkCashRegister(price, cash, cid) {
     let change = cash - price
-    let changeX100 =change*100
+    let changeX100 = change * 100
     let reqChangeArr = []
 
     let dollarChange = [.01, .05, .1, .25, 1, 5, 10, 20, 100].reverse()
     let dollarChangeX100 = [1, 5, 10, 25, 100, 500, 1000, 2000, 10000].reverse()
 
-    // console.log(cid)
-    // console.log(dollarChange)
     // total cash available in register 
     let cashAvail = cid
         .reduce((a, b) => a.concat(b))
         .filter(item => typeof (item) === "number")
         .reduce((a, b) => Math.round((a + b) * 100) / 100, 0)
 
+    // total bills available in the register 
     let billsAvail = cid
         .reverse()
         .reduce((acc, item, index) => {
@@ -40,73 +39,63 @@ function checkCashRegister(price, cash, cid) {
             acc[key] = Math.round(value / dollarChange[index])
             return acc
         }, {})
-        // console.log(billsAvail)
-    // return dollarChange
-
+    // if the register is short on cash
     if (cashAvail < change) {
-        console.log("Change: " + change)
-        console.log("Cash Available: " + cashAvail)
         return {
             status: "INSUFFICIENT_FUNDS",
             change: []
         }
     }
-    // console.log ()
-    // return change%dollarChange[1]
+    // for the time when there is enough cash in the register
+
     for (let index = 0; index < cid.length; index++) {
-        // let bills = (Math.round(change / dollarChange[index])*100)/100
         let billsReq = (Math.floor(changeX100 / dollarChangeX100[index]))
 
-        console.log('index:'+index)
-        console.log('bills Req:'+billsReq)
-        console.log('change:'+changeX100)
-        console.log('Available:'+ Object.values(billsAvail)[index])
-
         if (billsReq == Object.values(billsAvail)[index]) {
-            
-            console.log("inside if at index "+index)
-            
             reqChangeArr.push(billsReq)
-            // change = Math.round((change%dollarChange[index]*100))/100
-            changeX100 = Math.round((changeX100 % dollarChangeX100[index]) * 100) / 100
-        }
-        else if(billsReq > Object.values(billsAvail)[index]){
-            console.log("inside else at index "+index)
-            
+            changeX100 = changeX100 % dollarChangeX100[index]
+
+        } else if (billsReq > Object.values(billsAvail)[index]) {
             reqChangeArr.push(Object.values(billsAvail)[index])
 
-            let billsDiff = billsReq - Object.values(billsAvail)[index]
+            changeX100 = ((billsReq - Object.values(billsAvail)[index]) * dollarChangeX100[index]) +
+                (changeX100 % dollarChangeX100[index])
 
-            console.log("bills Diff:"+billsDiff)
-
-            let a = (Math.round((billsDiff * dollarChangeX100[index])*100)/100)
-            let b = ((Math.round((changeX100%dollarChangeX100[index])*100)/100))
-            
-            changeX100 = a+b
-
-            console.log("change Inside else "+ changeX100)
-
-
-        }
-
-        else if( billsReq < Object.values(billsAvail)[index] ){
-            
+        } else if (billsReq < Object.values(billsAvail)[index]) {
             reqChangeArr.push(billsReq)
             changeX100 = Math.round((changeX100 % dollarChangeX100[index]) * 100) / 100
 
-        }
-
-        else if(billsReq == 0){
-            
+        } else if (billsReq == 0) {
             reqChangeArr.push(0)
-
-            // changeX100 
         }
-
-    console.log()
 
     }
-    return reqChangeArr.map((item,index) => item * dollarChange[index])
+    reqChangeArr = reqChangeArr.map((item, index) => item * dollarChange[index])
+
+    let reqChangeObj = Object.keys(billsAvail)
+        .reduce((acc, key, index) => {
+            acc[key] = reqChangeArr[index]
+            return acc
+        }, {})
+        
+
+
+
+    // removing zeros from the object:
+
+    reqChangeObj = Object.keys(reqChangeObj)
+            .filter(k => reqChangeObj[k] > 0)
+            .reduce(function (obj,key){
+            if(obj[key] != 0){
+                obj[key] = reqChangeObj[key]
+            }
+            return obj
+        },{})
+
+
+    return reqChangeObj
+
+
 }
 
 // console.log(Math.floor(9674/2000))
