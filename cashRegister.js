@@ -84,8 +84,7 @@ function checkCashRegister(price, cash, cid)
             else if (billsReq > Object.values(billsAvailObj)[index])
             {
                 reqChangeArr.push(Object.values(billsAvailObj)[index])
-                changeX100 = ((billsReq - Object.values(billsAvailObj)[index]) * dollarChangeX100[index]) +
-                    (changeX100 % dollarChangeX100[index])
+                changeX100 = ((billsReq - Object.values(billsAvailObj)[index]) * dollarChangeX100[index]) + (changeX100 % dollarChangeX100[index])
 
             }
             else if (billsReq < Object.values(billsAvailObj)[index])
