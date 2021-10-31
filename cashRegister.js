@@ -147,8 +147,28 @@ function checkCashRegister(price, cash, cid)
     return status
 
 }
+
+// performance test using performance.now()
+
+const t0 = performance.now();
+checkCashRegister(19.5, 20, [
+    ["PENNY", 0.5],
+    ["NICKEL", 0],
+    ["DIME", 0],
+    ["QUARTER", 0],
+    ["ONE", 0],
+    ["FIVE", 0],
+    ["TEN", 0],
+    ["TWENTY", 0],
+    ["ONE HUNDRED", 0]
+])
+const t1 = performance.now();
+console.log(`Call to checkCashRegister took ${t1 - t0} milliseconds.`);
+
+
 // test cases 
 
+/**
 console.log(checkCashRegister(19.5, 20, [
     ["PENNY", 0.5],
     ["NICKEL", 0],
@@ -173,7 +193,6 @@ console.log(checkCashRegister(19.5, 20, [
     ["ONE HUNDRED", 100]
 ]))
 
-/**
 console.log(checkCashRegister(19.5, 20, [
     ["PENNY", 0.01],
     ["NICKEL", 0],
